@@ -1,8 +1,8 @@
 #include <cctype>
 #include <stdlib.h>
-#include "lexer.hh"
-#include "token.hh"
-#include "lexerexception.hh"
+#include "Lexer.hh"
+#include "Token.hh"
+#include "LexerError.hh"
 
 Lexer::Lexer(const char *pSource)
 {
@@ -11,8 +11,15 @@ Lexer::Lexer(const char *pSource)
 
 void Lexer::scanAll()
 {
-  while (*pSource != '\0')
+  do
+  {
     scan();
+  } while (*pSource != '\0');
+}
+
+Token *Lexer::getToken(int i) 
+{
+  return this->tokens[i];
 }
 
 char Lexer::consume()
@@ -22,7 +29,7 @@ char Lexer::consume()
 
 void Lexer::consumeDigit(char c)
 {
-  char buffer[13];
+  char *buffer = new char[13];
   buffer[0] = c;
   int i = 1;
   while (isdigit(peek()))
@@ -30,7 +37,7 @@ void Lexer::consumeDigit(char c)
     if (i >= 13)
     {
       // too large integer constant
-      throw new LexerException(line, col, c);
+      throw new LexerError(line, col, c);
       break;
     }
     c = consume();
@@ -39,11 +46,12 @@ void Lexer::consumeDigit(char c)
   }
   buffer[i] = '\0';
   int val = atoi(buffer);
+  addToken(new IntegerToken(val, line, col));
 }
 
 void Lexer::consumeIdentifierOrKeyword(char c)
 {
-  char buffer[17];
+  char *buffer = new char[17];
   buffer[0] = c;
   int i = 1;
   while (isalpha(peek()))
@@ -51,23 +59,23 @@ void Lexer::consumeIdentifierOrKeyword(char c)
     if (i >= 17)
     {
       // too long identifier
-      throw new LexerException(line, col, c);
+      throw new LexerError(line, col, c);
     }
     c = consume();
     buffer[i++] = c;
     col++;
   }
   buffer[i] = '\0';
-  auto find = keywords.find(buffer);
+  auto find = keywords.find(std::string(buffer));
   if (find == keywords.end())
   {
     // no keyword
-    addToken(new IdentifierToken(buffer));
+    addToken(new IdentifierToken(buffer, line, col));
   }
   else
   {
     // keyword
-    addToken(new Token(find->second));
+    addToken(new Token(find->second, line, col));
   }
 }
 
@@ -94,41 +102,44 @@ void Lexer::scan()
   char c = consume();
   switch (c)
   {
+  case ';':
+    addToken(new Token(Token::Kind::Semicolon, line, col));
+    break;
   case '(':
-    addToken(new Token(Token::Kind::LeftParanthesis));
+    addToken(new Token(Token::Kind::LeftParanthesis, line, col));
     break;
   case ')':
-    addToken(new Token(Token::Kind::RightParanthesis));
+    addToken(new Token(Token::Kind::RightParanthesis, line, col));
     break;
   case '{':
-    addToken(new Token(Token::Kind::LeftCurlyBrace));
+    addToken(new Token(Token::Kind::LeftCurlyBrace, line, col));
     break;
   case '}':
-    addToken(new Token(Token::Kind::RightCurlyBrace));
+    addToken(new Token(Token::Kind::RightCurlyBrace, line, col));
     break;
   case '+':
-    addToken(new Token(Token::Kind::Add));
+    addToken(new Token(Token::Kind::Add, line, col));
     break;
   case '-':
-    addToken(new Token(Token::Kind::Sub));
+    addToken(new Token(Token::Kind::Sub, line, col));
     break;
   case '*':
-    addToken(new Token(Token::Kind::Mul));
+    addToken(new Token(Token::Kind::Mul, line, col));
     break;
   case '/':
-    addToken(new Token(Token::Kind::Div));
+    addToken(new Token(Token::Kind::Div, line, col));
     break;
   case '=':
-    addToken(match('=') ? new Token(Token::Kind::Eq) : new Token(Token::Kind::Assign));
+    addToken(match('=') ? new Token(Token::Kind::Eq, line, col) : new Token(Token::Kind::Assign, line, col));
     break;
   case '!':
-    addToken(match('=') ? new Token(Token::Kind::NEq) : new Token(Token::Kind::Not));
+    addToken(match('=') ? new Token(Token::Kind::NEq, line, col) : new Token(Token::Kind::Not, line, col));
     break;
   case '<':
-    addToken(match('=') ? new Token(Token::Kind::LEq) : new Token(Token::Kind::Lt));
+    addToken(match('=') ? new Token(Token::Kind::LEq, line, col) : new Token(Token::Kind::Lt, line, col));
     break;
   case '>':
-    addToken(match('=') ? new Token(Token::Kind::GEq) : new Token(Token::Kind::Gt));
+    addToken(match('=') ? new Token(Token::Kind::GEq, line, col) : new Token(Token::Kind::Gt, line, col));
     break;
   case '\n':
     line++;
@@ -138,6 +149,9 @@ void Lexer::scan()
   case '\t':
   case '\r':
     break;
+  case '\0':
+    addToken(new Token(Token::Kind::EndOfFile, line, col));
+    break;
   default:
     if (isdigit(c)) {
       consumeDigit(c);
@@ -145,7 +159,7 @@ void Lexer::scan()
       consumeIdentifierOrKeyword(c);
     } else {
       // unexpected token
-      throw new LexerException(line, col, c);
+      throw new LexerError(line, col, c);
     }
     break;
   }

@@ -1,6 +1,9 @@
 #pragma once
+
 #include <unordered_map>
 #include <vector>
+#include <string>
+#include "Token.hh"
 
 class Lexer
 {
@@ -8,6 +11,7 @@ public:
   Lexer(const char *beg);
   ~Lexer();
   void scanAll();
+  Token *getToken(int i);
 
 private:
   char consume();
@@ -21,7 +25,7 @@ private:
   const char *pSource;
   int line = 1;
   int col = 1;
-  std::unordered_map<char *, Token> keywords = {
+  std::unordered_map<std::string, Token::Kind> keywords = {
       {"while", Token::Kind::While},
       {"if", Token::Kind::If},
       {"else", Token::Kind::Else},
