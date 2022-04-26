@@ -44,7 +44,8 @@
         "typeinfo": "cpp",
         "fstream": "cpp",
         "iostream": "cpp",
-        "istream": "cpp"
+        "istream": "cpp",
+        "set": "cpp"
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,

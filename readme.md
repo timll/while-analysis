@@ -14,11 +14,11 @@ Expr -> Number |
         Expr Binop Expr |
         Unop Expr
 
-Binop -> ABinop | RBinop
+Binop -> ABinop | CBinop
 
 ABinop -> + | - | * | /
 
-RBinop -> < | <= | == | != | => | >
+CBinop -> < | <= | == | != | => | >
 
 Unop -> - | !
 ```

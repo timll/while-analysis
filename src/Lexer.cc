@@ -11,13 +11,14 @@ Lexer::Lexer(const char *pSource)
 
 void Lexer::scanAll()
 {
-  do
+  while (*pSource != '\0')
   {
     scan();
-  } while (*pSource != '\0');
+  }
+  addToken(new Token(Token::Kind::EndOfFile, line, col));
 }
 
-Token *Lexer::getToken(int i) 
+Token *Lexer::getToken(int i)
 {
   return this->tokens[i];
 }
@@ -149,15 +150,17 @@ void Lexer::scan()
   case '\t':
   case '\r':
     break;
-  case '\0':
-    addToken(new Token(Token::Kind::EndOfFile, line, col));
-    break;
   default:
-    if (isdigit(c)) {
+    if (isdigit(c))
+    {
       consumeDigit(c);
-    } else if (isalpha(c)) {
+    }
+    else if (isalpha(c))
+    {
       consumeIdentifierOrKeyword(c);
-    } else {
+    }
+    else
+    {
       // unexpected token
       throw new LexerError(line, col, c);
     }

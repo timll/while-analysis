@@ -1,9 +1,11 @@
 #pragma once
+#include <vector>
+#include <string>
 
 class Token
 {
 public:
-  enum class Kind
+  enum Kind
   {
     Stmt, // dummy token for the parser to throw a syntax error
     Identifier,
@@ -43,17 +45,49 @@ public:
   int getCol();
   bool is(Token::Kind kind);
 
+  static std::string toString(Token::Kind kind);
+
 private:
   Token::Kind kind;
   int line;
   int col;
+  static const inline std::vector<std::string> strings = {
+      "Stmt",
+      "Identifier",
+      "Number",
+      "AssignStmt",
+      // Scope
+      ";",
+      "{",
+      "}",
+      "(",
+      ")",
+      "EOF",
+      // Keywords
+      "While",
+      "If",
+      "Else",
+      "Skip",
+      // Boolean Exprs
+      "!",
+      "==",
+      "!=",
+      ">=",
+      "<=",
+      ">",
+      "<",
+      // Arithmetic Exprs
+      "+",
+      "-",
+      "*",
+      "/"};
 };
 
 class IdentifierToken : public Token
 {
 public:
-  IdentifierToken(char *value, int line, int col) : value(value), Token(Token::Kind::Identifier, line, col) {}
-  ~IdentifierToken() {};
+  IdentifierToken(char *value, int line, int col) : Token(Token::Kind::Identifier, line, col), value(value) {}
+  ~IdentifierToken(){};
   char *getValue();
 
 private:
@@ -63,7 +97,7 @@ private:
 class IntegerToken : public Token
 {
 public:
-  IntegerToken(int value, int line, int col) : value(value), Token(Token::Kind::Identifier, line, col) {}
+  IntegerToken(int value, int line, int col) : Token(Token::Kind::Number, line, col), value(value) {}
   int getValue();
 
 private:

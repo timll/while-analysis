@@ -86,6 +86,7 @@ Expr *Parser::parseUnaryMinus()
     Expr *expr = parseRest();
     return new UnOpExpr(Token::Kind::Sub, expr);
   }
+  return parseRest();
 }
 
 Expr *Parser::parseRest()
@@ -94,13 +95,14 @@ Expr *Parser::parseRest()
     return parseVariable();
   else if (currentToken->is(Token::Kind::Number))
     return parseNumber();
-  else if (currentToken->is(Token::Kind::LeftParanthesis)) {
+  else if (currentToken->is(Token::Kind::LeftParanthesis))
+  {
     acceptIt();
     Expr *expr = parseExpression();
     accept(Token::Kind::RightParanthesis);
     return expr;
   }
-  throw new SyntaxError(Token::Kind::Identifier, currentToken);    
+  throw new SyntaxError(Token::Kind::Identifier, currentToken);
 }
 
 Variable *Parser::parseVariable()
@@ -112,7 +114,7 @@ Variable *Parser::parseVariable()
 }
 
 Number *Parser::parseNumber()
-{  
+{
   Token *tok = this->currentToken;
   accept(Token::Kind::Number);
   Number *num = new Number(((IntegerToken *)tok)->getValue());
@@ -126,6 +128,7 @@ Stmt *Parser::parseStmt()
   else if (this->currentToken->is(Token::Kind::Skip))
   {
     accept(Token::Kind::Skip);
+    accept(Token::Kind::Semicolon);
     return new SkipStmt();
   }
   else if (this->currentToken->is(Token::Kind::If))
@@ -139,8 +142,10 @@ Stmt *Parser::parseStmt()
 AssignStmt *Parser::parseAssignStmt()
 {
   Variable *lhs = parseVariable();
+  accept(Token::Kind::Assign);
   Expr *rhs = parseExpression();
   AssignStmt *assign = new AssignStmt(lhs, rhs);
+  accept(Token::Kind::Semicolon);
   return assign;
 }
 
