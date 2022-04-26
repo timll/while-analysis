@@ -9,18 +9,18 @@ Lexer::Lexer(const char *pSource)
   this->pSource = pSource;
 }
 
-void Lexer::scanAll()
+Token *Lexer::getNextToken()
 {
-  while (*pSource != '\0')
+  size_t old_size = this->deque.size();
+  if (old_size > 2)
   {
-    scan();
+    delete this->deque.front();
+    this->deque.erase(deque.begin());
+    old_size = 2;
   }
-  addToken(new Token(Token::Kind::EndOfFile, line, col));
-}
-
-Token *Lexer::getToken(int i)
-{
-  return this->tokens[i];
+  while (this->deque.size() == old_size)
+    scan();
+  return this->deque.back();
 }
 
 char Lexer::consume()
@@ -95,7 +95,7 @@ bool Lexer::match(char expected)
 
 void Lexer::addToken(Token *token)
 {
-  this->tokens.push_back(token);
+  this->deque.push_back(token);
 }
 
 void Lexer::scan()
@@ -149,6 +149,9 @@ void Lexer::scan()
   case ' ':
   case '\t':
   case '\r':
+    break;
+  case '\0':
+    addToken(new Token(Token::Kind::EndOfFile, line, col));
     break;
   default:
     if (isdigit(c))

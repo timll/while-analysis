@@ -16,24 +16,21 @@ int main(int argc, char *argv[])
   std::ifstream fin(argv[1]);
   std::string str(std::istreambuf_iterator<char>(fin), {});
   Lexer *lex = new Lexer(str.c_str());
-  try
-  {
-    lex->scanAll();
-  }
-  catch (LexerError &e)
-  {
-    printf(e.what());
-  }
   Parser *parser = new Parser(lex);
   Program *p;
   try
   {
     p = parser->parse();
+  } 
+  catch (LexerError &e)
+  {
+    printf(e.what());
   }
   catch (SyntaxError &e)
   {
     printf(e.what());
-  }
+  } 
+
   ASTPrinter printer = ASTPrinter();
   p->accept(&printer);
   printer.dumpToFile("ast.dot");

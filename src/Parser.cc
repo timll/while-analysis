@@ -8,8 +8,7 @@
 Program *Parser::parse()
 {
   Program *p = new Program();
-  this->curr = 0;
-  this->currentToken = lexer->getToken(this->curr);
+  this->currentToken = lexer->getNextToken();
   while (!currentToken->is(Token::Kind::EndOfFile))
   {
     p->addStmt(parseStmt());
@@ -26,7 +25,7 @@ void Parser::accept(Token::Kind kind)
 
 void Parser::acceptIt()
 {
-  this->currentToken = lexer->getToken(++this->curr);
+  this->currentToken = lexer->getNextToken();
 }
 
 Expr *Parser::parseExpression()
