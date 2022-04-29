@@ -4,10 +4,13 @@ Program -> (Stmt;)+
 
 CompoundStmt -> { (Stmt;)* } 
 
-Stmt -> Var = Expr |
+Stmt -> Type Var = Expr |
+        Var = Expr |
         skip |
         if (Expr) CompoundStmt [else CompoundStmt] |
         while (Expr) CompoundStmt
+
+Type -> int | bool
 
 Expr -> Number |
         Var |

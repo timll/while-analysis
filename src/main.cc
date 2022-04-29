@@ -30,9 +30,9 @@ int main(int argc, char *argv[])
   {
     p = parser->parse();
   }
-  catch (SyntaxError &e)
+  catch (const std::exception &e)
   {
-    printf(e.what());
+    std::cerr << e.what();
   }
   ASTPrinter printer = ASTPrinter();
   p->accept(&printer);

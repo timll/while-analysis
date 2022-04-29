@@ -23,6 +23,9 @@ public:
     If,
     Else,
     Skip,
+    // Types
+    Int,
+    Bool,
     // Boolean Exprs
     Not,
     Eq,
@@ -44,6 +47,7 @@ public:
   int getLine();
   int getCol();
   bool is(Token::Kind kind);
+  bool isType();
 
   static std::string toString(Token::Kind kind);
 

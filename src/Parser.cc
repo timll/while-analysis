@@ -123,7 +123,9 @@ Number *Parser::parseNumber()
 
 Stmt *Parser::parseStmt()
 {
-  if (this->currentToken->is(Token::Kind::Identifier))
+  if (this->currentToken->isType())
+    return parseDeclStmt();
+  else if (this->currentToken->is(Token::Kind::Identifier))
     return parseAssignStmt();
   else if (this->currentToken->is(Token::Kind::Skip))
   {
@@ -137,6 +139,17 @@ Stmt *Parser::parseStmt()
     return parseWhileStmt();
 
   throw SyntaxError(Token::Kind::Stmt, this->currentToken);
+}
+
+DeclarationStmt *Parser::parseDeclStmt()
+{
+  Token::Kind type = this->currentToken->getKind();
+  Variable *lhs = parseVariable();
+  accept(Token::Kind::Assign);
+  Expr *rhs = parseExpression();
+  DeclarationStmt *decl = new DeclarationStmt(type, lhs, rhs);
+  accept(Token::Kind::Semicolon);
+  return decl;
 }
 
 AssignStmt *Parser::parseAssignStmt()

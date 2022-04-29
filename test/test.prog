@@ -1,9 +1,9 @@
-x = 1;
+int x = 1;
 while (x == 1) {
   if (x != 3) {
     skip;
   } else {
-    y = 5;
+    bool y = 5;
     skip;
   }
   x = 2;

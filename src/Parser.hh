@@ -22,6 +22,7 @@ private:
   Variable *parseVariable();
   Number *parseNumber();
   Stmt *parseStmt();
+  DeclarationStmt *parseDeclStmt();
   AssignStmt *parseAssignStmt();
   IfStmt *parseIfStmt();
   WhileStmt *parseWhileStmt();

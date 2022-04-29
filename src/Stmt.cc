@@ -20,12 +20,20 @@ void CompoundStmt::accept(ASTVisitor *v)
   v->visit(this);
 }
 
+void DeclarationStmt::accept(ASTVisitor *v)
+{
+  this->lhs->accept(v);
+  this->rhs->accept(v);
+  v->visit(this);
+}
+
 void AssignStmt::accept(ASTVisitor *v)
 {
   this->lhs->accept(v);
   this->rhs->accept(v);
   v->visit(this);
 }
+
 
 void SkipStmt::accept(ASTVisitor *v)
 {

@@ -29,6 +29,8 @@ private:
       {"while", Token::Kind::While},
       {"if", Token::Kind::If},
       {"else", Token::Kind::Else},
-      {"skip", Token::Kind::Skip}};
+      {"skip", Token::Kind::Skip},
+      {"int", Token::Kind::Int},
+      {"bool", Token::Kind::Bool}};
   std::vector<Token *> tokens;
 };

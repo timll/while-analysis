@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "ASTVisitor.hh"
+#include "Token.hh"
 
 class Stmt
 {
@@ -30,6 +31,21 @@ public:
   const Expr *getRhs() { return rhs; }
 
 private:
+  Variable *lhs;
+  Expr *rhs;
+};
+
+class DeclarationStmt : public Stmt
+{
+public:
+  DeclarationStmt(Token::Kind type, Variable *lhs, Expr *rhs) : type(type), lhs(lhs), rhs(rhs) {}
+  void accept(ASTVisitor *v);
+  Token::Kind getType() { return type; }
+  const Variable *getLhs() { return lhs; }
+  const Expr *getRhs() { return rhs; }
+
+private:
+  Token::Kind type;
   Variable *lhs;
   Expr *rhs;
 };
