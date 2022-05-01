@@ -15,7 +15,11 @@ int main(int argc, char *argv[])
 
   std::ifstream fin(argv[1]);
   std::string str(std::istreambuf_iterator<char>(fin), {});
+  #ifdef DEBUG
+  Lexer *lex = new Lexer(str.c_str(), true);
+  #else
   Lexer *lex = new Lexer(str.c_str());
+  #endif
   Parser *parser = new Parser(lex);
   Program *p;
   try
@@ -24,11 +28,13 @@ int main(int argc, char *argv[])
   } 
   catch (LexerError &e)
   {
-    printf(e.what());
+    std::cerr << e.what();
+    return 1;
   }
-  catch (const std::exception &e)
+  catch (SyntaxError &e)
   {
     std::cerr << e.what();
+    return 2;
   }
   ASTPrinter printer = ASTPrinter();
   p->accept(&printer);

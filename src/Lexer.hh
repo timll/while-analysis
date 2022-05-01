@@ -9,7 +9,8 @@
 class Lexer
 {
 public:
-  Lexer(const char *beg);
+  Lexer(const char *pSource, bool keepTokens) : pSource(pSource), keepTokens(keepTokens) {}
+  Lexer(const char *pSource) : Lexer(pSource, false) {}
   ~Lexer();
   Token *getNextToken();
 
@@ -23,6 +24,7 @@ private:
   void scan();
 
   const char *pSource;
+  bool keepTokens;
   int line = 1;
   int col = 1;
   std::deque<Token *> deque;

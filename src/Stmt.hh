@@ -1,16 +1,17 @@
 #pragma once
 #include <vector>
 #include "ASTVisitor.hh"
+#include "Program.hh"
 #include "Token.hh"
 
-class Stmt
+class Stmt : ASTNode
 {
 public:
   Stmt() {}
   virtual void accept(ASTVisitor *v) = 0;
 };
 
-class CompoundStmt
+class CompoundStmt : ASTNode
 {
 public:
   CompoundStmt();

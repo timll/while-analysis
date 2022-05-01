@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include "Stmt.hh"
 #include "ASTVisitor.hh"
 
 class ASTNode

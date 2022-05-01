@@ -19,7 +19,7 @@ Program *Parser::parse()
 void Parser::accept(Token::Kind kind)
 {
   if (!this->currentToken->is(kind))
-    throw new SyntaxError(kind, this->currentToken);
+    throw SyntaxError(kind, this->currentToken);
   acceptIt();
 }
 
@@ -101,7 +101,7 @@ Expr *Parser::parseRest()
     accept(Token::Kind::RightParanthesis);
     return expr;
   }
-  throw new SyntaxError(Token::Kind::Identifier, currentToken);
+  throw SyntaxError(Token::Kind::Identifier, currentToken);
 }
 
 Variable *Parser::parseVariable()
@@ -143,6 +143,7 @@ Stmt *Parser::parseStmt()
 DeclarationStmt *Parser::parseDeclStmt()
 {
   Token::Kind type = this->currentToken->getKind();
+  acceptIt();
   Variable *lhs = parseVariable();
   accept(Token::Kind::Assign);
   Expr *rhs = parseExpression();

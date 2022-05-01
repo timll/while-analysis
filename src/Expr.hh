@@ -1,8 +1,9 @@
 #pragma once
 #include "Token.hh"
 #include "ASTVisitor.hh"
+#include "Program.hh"
 
-class Expr
+class Expr : ASTNode
 {
 public:
   Expr();

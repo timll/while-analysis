@@ -22,7 +22,7 @@ void ASTPrinter::dumpToFile(std::string filename)
 
 void ASTPrinter::visit(Program *program)
 {
-  DotNode *node = new DotNode(program, "Program");
+  DotNode *node = new DotNode(program, "<Program>");
   this->nodes.push_back(node);
   for (Stmt *stmt : *program->getStmts())
   {
@@ -33,7 +33,7 @@ void ASTPrinter::visit(Program *program)
 
 void ASTPrinter::visit(CompoundStmt *cstmt)
 {
-  DotNode *node = new DotNode(cstmt, "{ }");
+  DotNode *node = new DotNode(cstmt, "<Compound>");
   this->nodes.push_back(node);
   for (Stmt *stmt : *cstmt->getStmts())
   {
@@ -42,14 +42,21 @@ void ASTPrinter::visit(CompoundStmt *cstmt)
   }
 }
 
-void ASTPrinter::visit(Stmt *stmt)
+void ASTPrinter::visit(DeclarationStmt *decl)
 {
-  printf("Never reachable stmt\n");
+  std::string str = "<Decl>\n" + Token::toString(decl->getType());
+  DotNode *node = new DotNode(decl, str);
+  DotEdge *lhsedge = new DotEdge(decl, decl->getLhs(), "lhs");
+  DotEdge *rhsedge = new DotEdge(decl, decl->getRhs(), "rhs");
+  this->nodes.push_back(node);
+  this->edges.push_back(lhsedge);
+  this->edges.push_back(rhsedge);
 }
+
 
 void ASTPrinter::visit(AssignStmt *assign)
 {
-  DotNode *node = new DotNode(assign, "Assign");
+  DotNode *node = new DotNode(assign, "<Assign>");
   DotEdge *lhsedge = new DotEdge(assign, assign->getLhs(), "lhs");
   DotEdge *rhsedge = new DotEdge(assign, assign->getRhs(), "rhs");
   this->nodes.push_back(node);
@@ -59,13 +66,13 @@ void ASTPrinter::visit(AssignStmt *assign)
 
 void ASTPrinter::visit(SkipStmt *skip)
 {
-  DotNode *node = new DotNode(skip, "Skip");
+  DotNode *node = new DotNode(skip, "<Skip>");
   this->nodes.push_back(node);
 }
 
 void ASTPrinter::visit(IfStmt *ifstmt)
 {
-  DotNode *node = new DotNode(ifstmt, "If");
+  DotNode *node = new DotNode(ifstmt, "<If>");
   DotEdge *cedge = new DotEdge(ifstmt, ifstmt->getCondition(), "cond");
   DotEdge *tedge = new DotEdge(ifstmt, ifstmt->getTrueBody(), "true");
   this->nodes.push_back(node);
@@ -80,7 +87,7 @@ void ASTPrinter::visit(IfStmt *ifstmt)
 
 void ASTPrinter::visit(WhileStmt *whilestmt)
 {
-  DotNode *node = new DotNode(whilestmt, "While");
+  DotNode *node = new DotNode(whilestmt, "<While>");
   DotEdge *cedge = new DotEdge(whilestmt, whilestmt->getCondition(), "cond");
   DotEdge *bedge = new DotEdge(whilestmt, whilestmt->getBody(), "body");
   this->nodes.push_back(node);
@@ -88,14 +95,9 @@ void ASTPrinter::visit(WhileStmt *whilestmt)
   this->edges.push_back(bedge);
 }
 
-void ASTPrinter::visit(Expr *expr)
-{
-  printf("Never reachable expr\n");
-}
-
 void ASTPrinter::visit(BinOpExpr *bexpr)
 {
-  DotNode *node = new DotNode(bexpr, Token::toString(bexpr->getOp()));
+  DotNode *node = new DotNode(bexpr, "<BinOpExpr>\n" + Token::toString(bexpr->getOp()));
   DotEdge *ledge = new DotEdge(bexpr, bexpr->getLeft());
   DotEdge *redge = new DotEdge(bexpr, bexpr->getRight());
   this->nodes.push_back(node);
@@ -127,7 +129,7 @@ void ASTPrinter::visit(CompareExpr *cexpr)
 
 void ASTPrinter::visit(UnOpExpr *uexpr)
 {
-  DotNode *node = new DotNode(uexpr, Token::toString(uexpr->getOp()));
+  DotNode *node = new DotNode(uexpr, "<UnopExpr>\n" + Token::toString(uexpr->getOp()));
   DotEdge *edge = new DotEdge(uexpr, uexpr->getExpr());
   this->nodes.push_back(node);
   this->edges.push_back(edge);

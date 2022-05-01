@@ -72,6 +72,9 @@ private:
       "If",
       "Else",
       "Skip",
+      // Types
+      "int",
+      "bool",
       // Boolean Exprs
       "!",
       "==",

@@ -1,8 +1,10 @@
 // Used to circumvent circular dependencies in the ASTVisitor
 #pragma once
+class ASTNode;
 class Program;
 class CompoundStmt;
 class Stmt;
+class DeclarationStmt;
 class AssignStmt;
 class SkipStmt;
 class IfStmt;

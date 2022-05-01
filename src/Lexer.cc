@@ -4,11 +4,6 @@
 #include "Token.hh"
 #include "LexerError.hh"
 
-Lexer::Lexer(const char *pSource)
-{
-  this->pSource = pSource;
-}
-
 Token *Lexer::getNextToken()
 {
   size_t old_size = this->deque.size();
