@@ -28,7 +28,7 @@ class AssignStmt : public Stmt
 public:
   AssignStmt(Variable *lhs, Expr *rhs) : lhs(lhs), rhs(rhs) {}
   void accept(ASTVisitor *v);
-  const Variable *getLhs() { return lhs; }
+  Variable *getLhs() { return lhs; }
   const Expr *getRhs() { return rhs; }
 
 private:
@@ -42,7 +42,7 @@ public:
   DeclarationStmt(Token::Kind type, Variable *lhs, Expr *rhs) : type(type), lhs(lhs), rhs(rhs) {}
   void accept(ASTVisitor *v);
   Token::Kind getType() { return type; }
-  const Variable *getLhs() { return lhs; }
+  Variable *getLhs() { return lhs; }
   const Expr *getRhs() { return rhs; }
 
 private:

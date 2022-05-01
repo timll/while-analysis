@@ -8,6 +8,11 @@ class Expr : ASTNode
 public:
   Expr();
   virtual void accept(ASTVisitor *v) = 0;
+  void setType(Token::Kind type);
+  Token::Kind getType() const;
+
+protected:
+  Token::Kind type;
 };
 
 class BinOpExpr : public Expr
@@ -71,7 +76,9 @@ public:
   Variable(char *name) : name(name) {}
   void accept(ASTVisitor *v);
   const char *getName();
+  void setDeclarator(DeclarationStmt *declarator);
 
 private:
   char *name;
+  DeclarationStmt *declarator;
 };

@@ -1,5 +1,7 @@
-#include "Expr.hh"
+#include <stdexcept>
 #include "ASTVisitor.hh"
+#include "Expr.hh"
+#include "Stmt.hh"
 
 Expr::Expr() {}
 
@@ -34,4 +36,20 @@ void Variable::accept(ASTVisitor *v)
 const char *Variable::getName()
 {
   return this->name;
+}
+
+void Expr::setType(Token::Kind type)
+{
+  this->type = type;
+}
+
+Token::Kind Expr::getType() const
+{
+  return this->type;
+}
+
+void Variable::setDeclarator(DeclarationStmt *declarator)
+{
+  this->declarator = declarator;
+  this->type = declarator->getType();
 }

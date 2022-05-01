@@ -7,6 +7,8 @@
 #include "Parser.hh"
 #include "ASTPrinter.hh"
 #include "SyntaxError.hh"
+#include "ContextAnalysis.hh"
+#include "ContextError.hh"
 
 int main(int argc, char *argv[])
 {
@@ -15,17 +17,17 @@ int main(int argc, char *argv[])
 
   std::ifstream fin(argv[1]);
   std::string str(std::istreambuf_iterator<char>(fin), {});
-  #ifdef DEBUG
+#ifdef DEBUG
   Lexer *lex = new Lexer(str.c_str(), true);
-  #else
+#else
   Lexer *lex = new Lexer(str.c_str());
-  #endif
+#endif
   Parser *parser = new Parser(lex);
   Program *p;
   try
   {
     p = parser->parse();
-  } 
+  }
   catch (LexerError &e)
   {
     std::cerr << e.what();
@@ -36,6 +38,18 @@ int main(int argc, char *argv[])
     std::cerr << e.what();
     return 2;
   }
+
+  ContextAnalysis context = ContextAnalysis();
+  try
+  {
+    p->accept(&context);
+  }
+  catch (ContextError &e)
+  {
+    std::cerr << e.what();
+    return 2;
+  }
+
   ASTPrinter printer = ASTPrinter();
   p->accept(&printer);
   printer.dumpToFile("ast.dot");

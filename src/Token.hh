@@ -7,6 +7,7 @@ class Token
 public:
   enum Kind
   {
+    Default, // used to identify the default value
     Stmt, // dummy token for the parser to throw a syntax error
     Identifier,
     Number,
@@ -56,6 +57,7 @@ private:
   int line;
   int col;
   static const inline std::vector<std::string> strings = {
+      "Default",
       "Stmt",
       "Identifier",
       "Number",

@@ -1,14 +1,12 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "ASTVisitor.hh"
-#include "DotGraph.hh"
 
-class ASTPrinter : public ASTVisitor
+class ContextAnalysis : public ASTVisitor
 {
 public:
-  void dumpToFile(std::string filename);
-
   void visit(Program *program);
 
   void visit(CompoundStmt *cstmt);
@@ -28,6 +26,5 @@ public:
   void visit(Number *num);
 
 private:
-  std::vector<DotNode *> nodes;
-  std::vector<DotEdge *> edges;
+  std::unordered_map<std::string, DeclarationStmt *> decls;
 };

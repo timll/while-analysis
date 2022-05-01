@@ -108,7 +108,10 @@ void ASTPrinter::visit(Expr *expr)
 
 void ASTPrinter::visit(BinOpExpr *bexpr)
 {
-  DotNode *node = new DotNode(bexpr, "<BinOpExpr>");
+  std::string str = "<BinOpExpr>";
+  if (bexpr->getType() != Token::Kind::Default)
+    str += "\n" + Token::toString(bexpr->getType());
+  DotNode *node = new DotNode(bexpr, str);
   DotEdge *ledge = new DotEdge(bexpr, bexpr->getLeft(), "l");
   DotNode *op = new DotNode(bexpr, "op", Token::toString(bexpr->getOp()));
   DotEdge *opedge = new DotEdge(bexpr, bexpr, "op", "op");
@@ -132,6 +135,9 @@ void ASTPrinter::visit(CompareExpr *cexpr)
 
 void ASTPrinter::visit(UnOpExpr *uexpr)
 {
+  std::string str = "<UnopExpr>";
+  if (uexpr->getType() != Token::Kind::Default)
+    str += "\n" + Token::toString(uexpr->getType());
   DotNode *node = new DotNode(uexpr, "<UnopExpr>\n" + Token::toString(uexpr->getOp()));
   DotEdge *edge = new DotEdge(uexpr, uexpr->getExpr());
   this->nodes.push_back(node);
@@ -140,12 +146,18 @@ void ASTPrinter::visit(UnOpExpr *uexpr)
 
 void ASTPrinter::visit(Variable *var)
 {
-  DotNode *node = new DotNode(var, var->getName());
+  std::string str(var->getName());
+  if (var->getType() != Token::Kind::Default)
+    str += "\n" + Token::toString(var->getType());
+  DotNode *node = new DotNode(var, str);
   this->nodes.push_back(node);
 }
 
 void ASTPrinter::visit(Number *num)
 {
-  DotNode *node = new DotNode(num, std::to_string(num->getValue()));
+  std::string str = std::to_string(num->getValue());
+  if (num->getType() != Token::Kind::Default)
+    str += "\n" + Token::toString(num->getType());
+  DotNode *node = new DotNode(num, str);
   this->nodes.push_back(node);
 }
