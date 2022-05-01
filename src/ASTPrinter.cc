@@ -42,17 +42,24 @@ void ASTPrinter::visit(CompoundStmt *cstmt)
   }
 }
 
-void ASTPrinter::visit(DeclarationStmt *decl)
+void ASTPrinter::visit(Stmt *stmt)
 {
-  std::string str = "<Decl>\n" + Token::toString(decl->getType());
-  DotNode *node = new DotNode(decl, str);
-  DotEdge *lhsedge = new DotEdge(decl, decl->getLhs(), "lhs");
-  DotEdge *rhsedge = new DotEdge(decl, decl->getRhs(), "rhs");
-  this->nodes.push_back(node);
-  this->edges.push_back(lhsedge);
-  this->edges.push_back(rhsedge);
 }
 
+void ASTPrinter::visit(DeclarationStmt *decl)
+{
+  std::string str = "<Decl>";
+  DotNode *node = new DotNode(decl, str);
+  DotNode *type = new DotNode(decl, "type", Token::toString(decl->getType()));
+  DotEdge *lhsedge = new DotEdge(decl, decl->getLhs(), "lhs");
+  DotEdge *rhsedge = new DotEdge(decl, decl->getRhs(), "rhs");
+  DotEdge *typeedge = new DotEdge(decl, decl, "type", "type");
+  this->nodes.push_back(node);
+  this->nodes.push_back(type);
+  this->edges.push_back(lhsedge);
+  this->edges.push_back(rhsedge);
+  this->edges.push_back(typeedge);
+}
 
 void ASTPrinter::visit(AssignStmt *assign)
 {
@@ -95,36 +102,32 @@ void ASTPrinter::visit(WhileStmt *whilestmt)
   this->edges.push_back(bedge);
 }
 
+void ASTPrinter::visit(Expr *expr)
+{
+}
+
 void ASTPrinter::visit(BinOpExpr *bexpr)
 {
-  DotNode *node = new DotNode(bexpr, "<BinOpExpr>\n" + Token::toString(bexpr->getOp()));
-  DotEdge *ledge = new DotEdge(bexpr, bexpr->getLeft());
-  DotEdge *redge = new DotEdge(bexpr, bexpr->getRight());
+  DotNode *node = new DotNode(bexpr, "<BinOpExpr>");
+  DotEdge *ledge = new DotEdge(bexpr, bexpr->getLeft(), "l");
+  DotNode *op = new DotNode(bexpr, "op", Token::toString(bexpr->getOp()));
+  DotEdge *opedge = new DotEdge(bexpr, bexpr, "op", "op");
+  DotEdge *redge = new DotEdge(bexpr, bexpr->getRight(), "r");
   this->nodes.push_back(node);
+  this->nodes.push_back(op);
   this->edges.push_back(ledge);
+  this->edges.push_back(opedge);
   this->edges.push_back(redge);
 }
 
 void ASTPrinter::visit(ArithmeticExpr *aexpr)
 {
-  printf("Never reachable arith");
-  // DotNode *node = new DotNode(aexpr, Token::toString(aexpr->getOp()));
-  // DotEdge *ledge = new DotEdge(aexpr, aexpr->getLeft());
-  // DotEdge *redge = new DotEdge(aexpr, aexpr->getRight());
-  // this->nodes.push_back(node);
-  // this->edges.push_back(ledge);
-  // this->edges.push_back(redge);
+  visit((BinOpExpr *)aexpr);
 }
 
 void ASTPrinter::visit(CompareExpr *cexpr)
 {
-  printf("Never reachable cmp");
-  // DotNode *node = new DotNode(cexpr, Token::toString(cexpr->getOp()));
-  // DotEdge *ledge = new DotEdge(cexpr, cexpr->getLeft());
-  // DotEdge *redge = new DotEdge(cexpr, cexpr->getRight());
-  // this->nodes.push_back(node);
-  // this->edges.push_back(ledge);
-  // this->edges.push_back(redge);
+  visit((BinOpExpr *)cexpr);
 }
 
 void ASTPrinter::visit(UnOpExpr *uexpr)
