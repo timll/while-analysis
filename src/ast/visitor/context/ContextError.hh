@@ -2,7 +2,7 @@
 #include <exception>
 #include <stdexcept>
 #include <stdio.h>
-#include "Token.hh"
+#include "./../../../parser/Token.hh"
 
 class ContextError : public std::exception
 {

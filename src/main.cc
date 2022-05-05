@@ -1,14 +1,15 @@
 #include <iostream>
 #include <fstream>
 #include <iterator>
-#include "Lexer.hh"
-#include "LexerError.hh"
-#include "Program.hh"
-#include "Parser.hh"
-#include "ASTPrinter.hh"
-#include "SyntaxError.hh"
-#include "ContextAnalysis.hh"
-#include "ContextError.hh"
+#include "parser/Lexer.hh"
+#include "parser/LexerError.hh"
+#include "parser/Parser.hh"
+#include "parser/SyntaxError.hh"
+#include "ast/ASTNodes.hh"
+#include "ast/visitor/ASTVisitor.hh"
+#include "ast/visitor/printer/ASTPrinter.hh"
+#include "ast/visitor/context/ContextAnalysis.hh"
+#include "ast/visitor/context/ContextError.hh"
 
 int main(int argc, char *argv[])
 {
@@ -39,19 +40,19 @@ int main(int argc, char *argv[])
     return 2;
   }
 
-  ContextAnalysis context = ContextAnalysis();
-  try
-  {
-    p->accept(&context);
-  }
-  catch (ContextError &e)
-  {
-    std::cerr << e.what();
-    return 2;
-  }
+  // ContextAnalysis context = ContextAnalysis();
+  // try
+  // {
+  //   p->accept(&context);
+  // }
+  // catch (ContextError &e)
+  // {
+  //   std::cerr << e.what();
+  //   return 2;
+  // }
 
   ASTPrinter printer = ASTPrinter();
-  p->accept(&printer);
-  printer.dumpToFile("ast.dot");
+  // p->accept(&printer);
+  // printer.dumpToFile("ast.dot");
   return 0;
 }

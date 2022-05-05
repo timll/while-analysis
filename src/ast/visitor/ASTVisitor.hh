@@ -1,5 +1,5 @@
 #pragma once
-#include "ASTClasses.fwd.hh"
+#include "./../ASTNodes.fwd.hh"
 
 class ASTVisitor
 {
@@ -21,5 +21,5 @@ public:
   virtual void visit(UnOpExpr *uexpr) = 0;
   virtual void visit(Variable *var) = 0;
   virtual void visit(Number *num) = 0;
-  virtual void visit(Boolean *num) = 0;
+  virtual void visit(Boolean *boolean) = 0;
 };

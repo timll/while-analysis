@@ -1,6 +1,6 @@
-ccsrc = $(wildcard src/*.cc)
+ccsrc = $(wildcard src/*.cc src/*/*.cc src/*/*/*.cc src/*/*/*/*.cc)
 obj = $(ccsrc:.cc=.o)
-CXXFLAGS = -D DEBUG -g
+CXXFLAGS = -Wall -DDEBUG -g
 LDFLAGS = 
 
 all: main

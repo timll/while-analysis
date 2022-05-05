@@ -1,8 +1,6 @@
 #pragma once
 #include "Lexer.hh"
-#include "Program.hh"
-#include "Stmt.hh"
-#include "Expr.hh"
+#include "./../ast/ASTNodes.hh"
 
 class Parser
 {

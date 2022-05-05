@@ -1,7 +1,6 @@
 #include "ContextAnalysis.hh"
 #include "ContextError.hh"
-#include "Stmt.hh"
-#include "Expr.hh"
+#include "./../../ASTNodes.hh"
 
 void ContextAnalysis::visit(Program *program) {}
 
@@ -121,7 +120,7 @@ void ContextAnalysis::visit(Number *num)
   num->setType(Token::Kind::Int);
 }
 
-void ContextAnalysis::visit(Boolean *num)
+void ContextAnalysis::visit(Boolean *boolean)
 {
-  num->setType(Token::Kind::Bool);
+  boolean->setType(Token::Kind::Bool);
 }

@@ -3,9 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include "ASTPrinter.hh"
-#include "Program.hh"
-#include "Stmt.hh"
-#include "Expr.hh"
+#include "./../../ASTNodes.hh"
 
 void ASTPrinter::dumpToFile(std::string filename)
 {
@@ -162,15 +160,15 @@ void ASTPrinter::visit(Number *num)
   this->nodes.push_back(node);
 }
 
-void ASTPrinter::visit(Boolean *num)
+void ASTPrinter::visit(Boolean *boolean)
 {
   std::string str;
-  if (num->getValue())
+  if (boolean->getValue())
     str = "true";
   else
     str = "false";
-  if (num->getType() != Token::Kind::Default)
-    str += "\n" + Token::toString(num->getType());
-  DotNode *node = new DotNode(num, str);
+  if (boolean->getType() != Token::Kind::Default)
+    str += "\n" + Token::toString(boolean->getType());
+  DotNode *node = new DotNode(boolean, str);
   this->nodes.push_back(node);
 }
