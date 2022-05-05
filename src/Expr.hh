@@ -59,6 +59,17 @@ private:
   Expr *expr;
 };
 
+class Boolean : public Expr
+{
+public:
+  Boolean(bool value) : value(value) {}
+  void accept(ASTVisitor *v);
+  bool getValue();
+
+private:
+  bool value;
+};
+
 class Number : public Expr
 {
 public:

@@ -16,3 +16,4 @@ class CompareExpr;
 class UnOpExpr;
 class Variable;
 class Number;
+class Boolean;

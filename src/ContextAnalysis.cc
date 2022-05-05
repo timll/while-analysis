@@ -120,3 +120,8 @@ void ContextAnalysis::visit(Number *num)
 {
   num->setType(Token::Kind::Int);
 }
+
+void ContextAnalysis::visit(Boolean *num)
+{
+  num->setType(Token::Kind::Bool);
+}

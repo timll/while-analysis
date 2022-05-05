@@ -100,7 +100,16 @@ Expr *Parser::parseRest()
     Expr *expr = parseExpression();
     accept(Token::Kind::RightParanthesis);
     return expr;
+  } else if (currentToken->is(Token::Kind::True)) {
+    acceptIt();
+    Boolean *b = new Boolean(true);
+    return b;
+  } else if (currentToken->is(Token::Kind::False)) {
+    acceptIt();
+    Boolean *b = new Boolean(false);
+    return b;
   }
+
   throw SyntaxError(Token::Kind::Identifier, currentToken);
 }
 

@@ -3,7 +3,7 @@ while (x == 1) {
   if (x != 3) {
     skip;
   } else {
-    bool y = 5;
+    bool y = true;
     skip;
   }
   x = 2;

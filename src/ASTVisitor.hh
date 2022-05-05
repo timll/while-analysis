@@ -21,4 +21,5 @@ public:
   virtual void visit(UnOpExpr *uexpr) = 0;
   virtual void visit(Variable *var) = 0;
   virtual void visit(Number *num) = 0;
+  virtual void visit(Boolean *num) = 0;
 };

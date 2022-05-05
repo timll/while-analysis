@@ -34,5 +34,7 @@ private:
       {"else", Token::Kind::Else},
       {"skip", Token::Kind::Skip},
       {"int", Token::Kind::Int},
-      {"bool", Token::Kind::Bool}};
+      {"bool", Token::Kind::Bool},
+      {"true", Token::Kind::True},
+      {"false", Token::Kind::False}};
 };

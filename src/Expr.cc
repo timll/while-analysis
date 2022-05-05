@@ -18,6 +18,16 @@ void UnOpExpr::accept(ASTVisitor *v)
   v->visit(this);
 }
 
+void Boolean::accept(ASTVisitor *v)
+{
+  v->visit(this);
+}
+
+bool Boolean::getValue()
+{
+  return this->value;
+}
+
 void Number::accept(ASTVisitor *v)
 {
   v->visit(this);

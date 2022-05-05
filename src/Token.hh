@@ -24,6 +24,8 @@ public:
     If,
     Else,
     Skip,
+    True,
+    False,
     // Types
     Int,
     Bool,
@@ -74,6 +76,8 @@ private:
       "If",
       "Else",
       "Skip",
+      "True",
+      "False",
       // Types
       "int",
       "bool",

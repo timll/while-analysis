@@ -161,3 +161,16 @@ void ASTPrinter::visit(Number *num)
   DotNode *node = new DotNode(num, str);
   this->nodes.push_back(node);
 }
+
+void ASTPrinter::visit(Boolean *num)
+{
+  std::string str;
+  if (num->getValue())
+    str = "true";
+  else
+    str = "false";
+  if (num->getType() != Token::Kind::Default)
+    str += "\n" + Token::toString(num->getType());
+  DotNode *node = new DotNode(num, str);
+  this->nodes.push_back(node);
+}

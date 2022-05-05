@@ -12,10 +12,13 @@ Stmt -> Type Var = Expr |
 
 Type -> int | bool
 
-Expr -> Number |
+Expr -> Boolean |
+        Number |
         Var |
         Expr Binop Expr |
         Unop Expr
+
+Boolean -> true | false
 
 Binop -> ABinop | CBinop
 

@@ -26,6 +26,7 @@ public:
   void visit(UnOpExpr *uexpr);
   void visit(Variable *var);
   void visit(Number *num);
+  void visit(Boolean *num);
 
 private:
   std::vector<DotNode *> nodes;
