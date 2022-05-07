@@ -114,7 +114,8 @@ Variable *Parser::parseVariable()
 {
   Token *tok = this->currentToken;
   accept(Token::Kind::Identifier);
-  Variable *var = new Variable(((IdentifierToken *)tok)->getValue());
+  char *name = ((IdentifierToken *)tok)->getValue();
+  Variable *var = new Variable(name);
   return var;
 }
 

@@ -7,7 +7,7 @@
 Token *Lexer::getNextToken()
 {
   size_t old_size = this->deque.size();
-  if (old_size > 2)
+  if (!this->keepTokens && old_size > 2)
   {
     delete this->deque.front();
     this->deque.erase(deque.begin());

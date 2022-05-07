@@ -1,4 +1,5 @@
 #include "ASTNodes.hh"
+#include <typeinfo>
 #include "./visitor/ASTVisitor.hh"
 
 void Program::addStmt(Stmt *stmt)
@@ -122,6 +123,16 @@ void Expr::setType(Token::Kind type)
 Token::Kind Expr::getType() const
 {
   return this->type;
+}
+
+void Expr::setVar(TACVariable *var)
+{
+  this->var = var;
+}
+
+TACVariable *Expr::getVar()
+{
+  return this->var;
 }
 
 void Variable::setDeclarator(DeclarationStmt *declarator)

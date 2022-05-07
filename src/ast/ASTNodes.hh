@@ -2,6 +2,7 @@
 #include <vector>
 #include "./visitor/ASTVisitor.hh"
 #include "./../parser/Token.hh"
+#include "./../cfg/TACStmts.hh"
 
 class ASTNode
 {
@@ -19,14 +20,17 @@ private:
   std::vector<Stmt *> stmts;
 };
 
-class Stmt : ASTNode
+class Stmt : public ASTNode
 {
 public:
   Stmt() {}
   virtual void accept(ASTVisitor *v) = 0;
+  TACNode *pred;
+
+private:
 };
 
-class CompoundStmt : ASTNode
+class CompoundStmt : public ASTNode
 {
 public:
   CompoundStmt();
@@ -44,7 +48,7 @@ public:
   AssignStmt(Variable *lhs, Expr *rhs) : lhs(lhs), rhs(rhs) {}
   void accept(ASTVisitor *v);
   Variable *getLhs() { return lhs; }
-  const Expr *getRhs() { return rhs; }
+  Expr *getRhs() { return rhs; }
 
 private:
   Variable *lhs;
@@ -58,7 +62,7 @@ public:
   void accept(ASTVisitor *v);
   Token::Kind getType() { return type; }
   Variable *getLhs() { return lhs; }
-  const Expr *getRhs() { return rhs; }
+  Expr *getRhs() { return rhs; }
 
 private:
   Token::Kind type;
@@ -81,9 +85,9 @@ public:
   IfStmt(Expr *condition, CompoundStmt *trueBody, CompoundStmt *elseBody)
       : condition(condition), trueBody(trueBody), elseBody(elseBody) {}
   void accept(ASTVisitor *v);
-  const Expr *getCondition() { return condition; }
-  const CompoundStmt *getTrueBody() { return trueBody; }
-  const CompoundStmt *getElseBody() { return elseBody; }
+  Expr *getCondition() { return condition; }
+  CompoundStmt *getTrueBody() { return trueBody; }
+  CompoundStmt *getElseBody() { return elseBody; }
   const bool hasElse() { return elseBody != nullptr; }
 
 private:
@@ -97,8 +101,8 @@ class WhileStmt : public Stmt
 public:
   WhileStmt(Expr *condition, CompoundStmt *body) : condition(condition), body(body) {}
   void accept(ASTVisitor *v);
-  const Expr *getCondition() { return condition; }
-  const CompoundStmt *getBody() { return body; }
+  Expr *getCondition() { return condition; }
+  CompoundStmt *getBody() { return body; }
 
 private:
   Expr *condition;
@@ -112,9 +116,13 @@ public:
   virtual void accept(ASTVisitor *v) = 0;
   void setType(Token::Kind type);
   Token::Kind getType() const;
+  virtual bool isAtomic() { return false; };
+  void setVar(TACVariable *var);
+  TACVariable *getVar();
 
 protected:
   Token::Kind type;
+  TACVariable *var;
 };
 
 class BinOpExpr : public Expr
@@ -123,9 +131,10 @@ public:
   BinOpExpr(Expr *left, Token::Kind op, Expr *right)
       : Expr(), left(left), op(op), right(right) {}
   void accept(ASTVisitor *v);
-  const Expr *getLeft() { return left; };
+  Expr *getLeft() { return left; };
   Token::Kind getOp() { return op; };
-  const Expr *getRight() { return right; };
+  Expr *getRight() { return right; };
+  // bool isAtomic() { return this->left->isAtomic() && this->right->isAtomic(); };
 
 private:
   Expr *left;
@@ -154,7 +163,8 @@ public:
       : op(op), expr(expr) {}
   void accept(ASTVisitor *v);
   Token::Kind getOp() { return op; };
-  const Expr *getExpr() { return expr; };
+  Expr *getExpr() { return expr; };
+  // bool isAtomic() { return this->expr->isAtomic(); };
 
 private:
   Token::Kind op;
@@ -167,6 +177,7 @@ public:
   Boolean(bool value) : value(value) {}
   void accept(ASTVisitor *v);
   bool getValue();
+  bool isAtomic() { return true; }
 
 private:
   bool value;
@@ -178,6 +189,7 @@ public:
   Number(int value) : value(value) {}
   void accept(ASTVisitor *v);
   int getValue();
+  bool isAtomic() { return true; }
 
 private:
   int value;
@@ -190,6 +202,7 @@ public:
   void accept(ASTVisitor *v);
   const char *getName();
   void setDeclarator(DeclarationStmt *declarator);
+  bool isAtomic() { return true; }
 
 private:
   char *name;

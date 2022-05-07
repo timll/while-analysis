@@ -10,6 +10,7 @@
 #include "ast/visitor/printer/ASTPrinter.hh"
 #include "ast/visitor/context/ContextAnalysis.hh"
 #include "ast/visitor/context/ContextError.hh"
+#include "ast/visitor/ast2tac/AST2TAC.hh"
 
 int main(int argc, char *argv[])
 {
@@ -40,19 +41,26 @@ int main(int argc, char *argv[])
     return 2;
   }
 
-  // ContextAnalysis context = ContextAnalysis();
-  // try
-  // {
-  //   p->accept(&context);
-  // }
-  // catch (ContextError &e)
-  // {
-  //   std::cerr << e.what();
-  //   return 2;
-  // }
+  ContextAnalysis context = ContextAnalysis();
+  try
+  {
+    p->accept(&context);
+  }
+  catch (ContextError &e)
+  {
+    std::cerr << e.what();
+    return 2;
+  }
 
   ASTPrinter printer = ASTPrinter();
-  // p->accept(&printer);
-  // printer.dumpToFile("ast.dot");
+  p->accept(&printer);
+  printer.dumpToFile("ast.dot");
+
+  AST2TAC a2t = AST2TAC();
+  p->accept(&a2t);
+  for (TACNode *node : *a2t.getCode())
+  {
+    std::cout << node->toString() << "\n";
+  }
   return 0;
 }
