@@ -25,7 +25,8 @@ class Stmt : public ASTNode
 public:
   Stmt() {}
   virtual void accept(ASTVisitor *v) = 0;
-  TACNode *pred;
+  TACNode *front;
+  TACNode *back;
 
 private:
 };
@@ -119,6 +120,7 @@ public:
   virtual bool isAtomic() { return false; };
   void setVar(TACVariable *var);
   TACVariable *getVar();
+  std::vector<TACNode *> tacNodes;
 
 protected:
   Token::Kind type;

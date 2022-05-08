@@ -10,35 +10,27 @@ class TACNode
 {
 public:
   virtual std::string toString() = 0;
+  virtual bool isStructuredBranch() = 0;
+  void addPred(TACNode *node);
+  void addSucc(TACNode *node);
+  std::vector<TACNode *> *getPreds();
+  std::vector<TACNode *> *getSuccs();
+
+private:
+  std::vector<TACNode *> preds;
+  std::vector<TACNode *> succs;
 };
 
 class TACNormalNode : public TACNode
 {
 public:
-  void addPred(TACNode *node);
-  void setSucc(TACNode *node);
-  std::vector<TACNode *> *getPreds();
-  TACNode *getSucc();
-
-private:
-  std::vector<TACNode *> preds;
-  TACNode *succ;
+  bool isStructuredBranch() { return false; }
 };
 
 class TACStructuredBranch : public TACNode
 {
 public:
-  void addPred(TACNode *node);
-  void setTrueSucc(TACNode *node);
-  void setFalseSucc(TACNode *node);
-  std::vector<TACNode *> *getPreds();
-  TACNode *getTrueSucc();
-  TACNode *getFalseSucc();
-
-private:
-  std::vector<TACNode *> preds;
-  TACNode *trueSucc;
-  TACNode *falseSucc;
+  bool isStructuredBranch() { return true; }
 };
 
 class TACAssign : public TACNormalNode

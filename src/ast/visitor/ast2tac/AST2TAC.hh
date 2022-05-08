@@ -35,6 +35,8 @@ private:
   TACAtom *toAtomic(Expr *expr);
   TACVariable *getTemp();
   void addCode(TACNode *node);
+  void addEdge(TACNode *from, TACNode *to);
+  void addEdge(std::vector<TACNode *> *nodes, TACNode *to);
 
   std::vector<TACNode *> code;
   int temp_counter = 0;

@@ -3,47 +3,87 @@
 #include "AST2TAC.hh"
 #include "./../../ASTNodes.hh"
 
-void AST2TAC::visit(Program *program) {}
+void AST2TAC::visit(Program *program) 
+{  
+  auto stmts = program->getStmts();
+  size_t size = stmts->size();
+  for (size_t i = 1; i < size; i++) {
+    addEdge(stmts->at(i-1)->back, stmts->at(i)->front);
+  }
+}
 
-void AST2TAC::visit(CompoundStmt *cstmt) {}
+void AST2TAC::visit(CompoundStmt *cstmt) 
+{
+  auto stmts = cstmt->getStmts();
+  size_t size = stmts->size();
+  for (size_t i = 1; i < size; i++) {
+    addEdge(stmts->at(i-1)->back, stmts->at(i)->front);
+  }
+}
+
 void AST2TAC::visit(Stmt *stmt) {}
 
-void AST2TAC::visit(DeclarationStmt *decl) 
+void AST2TAC::visit(DeclarationStmt *decl)
 {
   TACExpr *rhs = getAtomic(decl->getRhs());
   TACAssign *tac = new TACAssign(new TACVariable(decl->getLhs()->getName()), rhs);
   addCode(tac);
-  decl->pred = tac;
+  if (decl->getRhs()->tacNodes.size() == 0)
+    decl->front = tac;
+  else
+    decl->front = decl->getRhs()->tacNodes.front();
+  decl->back = tac;
+  addEdge(&decl->getRhs()->tacNodes, tac);
 }
 
-void AST2TAC::visit(AssignStmt *assign) 
+void AST2TAC::visit(AssignStmt *assign)
 {
   TACExpr *rhs = getAtomic(assign->getRhs());
   TACAssign *tac = new TACAssign(new TACVariable(assign->getLhs()->getName()), rhs);
   addCode(tac);
-  assign->pred = tac;
+  if (assign->getRhs()->tacNodes.size() == 0)
+    assign->front = tac;
+  else
+    assign->front = assign->getRhs()->tacNodes.front();
+  assign->back = tac;
+  addEdge(&assign->getRhs()->tacNodes, tac);
 }
 
-void AST2TAC::visit(SkipStmt *skip) 
+void AST2TAC::visit(SkipStmt *skip)
 {
   TACSkip *tac = new TACSkip();
   addCode(tac);
-  skip->pred = tac;
+  skip->front = tac;
+  skip->back = tac;
 }
 
-void AST2TAC::visit(IfStmt *ifstmt) 
+void AST2TAC::visit(IfStmt *ifstmt)
 {
   TACIf *tac = new TACIf(ifstmt->getCondition()->getVar());
   addCode(tac);
-  ifstmt->pred = tac;
+  addEdge(&ifstmt->getCondition()->tacNodes, tac);
+  addEdge(tac, ifstmt->getTrueBody()->getStmts()->front()->front);
+  if (ifstmt->hasElse())
+    addEdge(tac, ifstmt->getElseBody()->getStmts()->front()->front);
+  if (ifstmt->getCondition()->tacNodes.size() == 0)
+    ifstmt->front = tac;
+  else
+    ifstmt->front = ifstmt->getCondition()->tacNodes.front();
+  ifstmt->back = tac;
 }
 
-void AST2TAC::visit(WhileStmt *whilestmt) 
+void AST2TAC::visit(WhileStmt *whilestmt)
 {
   TACWhile *tac = new TACWhile(whilestmt->getCondition()->getVar());
   addCode(tac);
-  whilestmt->pred = tac;
-  // tac->setTrueSucc(whilestmt->getBody()->getStmts()->front()->pred);
+  addEdge(&whilestmt->getCondition()->tacNodes, tac);
+  addEdge(tac, whilestmt->getBody()->getStmts()->front()->front);
+  addEdge(whilestmt->getBody()->getStmts()->back()->back, tac);
+  if (whilestmt->getCondition()->tacNodes.size() == 0)
+    whilestmt->front = tac;
+  else
+    whilestmt->front = whilestmt->getCondition()->tacNodes.front();
+  whilestmt->back = tac;
 }
 
 void AST2TAC::visit(Expr *expr) {}
@@ -54,29 +94,35 @@ void AST2TAC::visit(BinOpExpr *bexpr)
   TACVariable *tmp = getTemp();
   bexpr->setVar(tmp);
   TACAssign *assgn = new TACAssign(tmp, tac);
+  std::vector<TACNode *> merge = bexpr->getLeft()->tacNodes;
+  merge.insert(merge.end(), bexpr->getRight()->tacNodes.begin(), bexpr->getRight()->tacNodes.end());
+  bexpr->tacNodes = merge;
+  bexpr->tacNodes.push_back(assgn);
   addCode(assgn);
 }
 
-void AST2TAC::visit(ArithmeticExpr *aexpr) 
+void AST2TAC::visit(ArithmeticExpr *aexpr)
 {
-  visit((BinOpExpr *) aexpr);
+  visit((BinOpExpr *)aexpr);
 }
 
-void AST2TAC::visit(CompareExpr *cexpr) 
+void AST2TAC::visit(CompareExpr *cexpr)
 {
-  visit((BinOpExpr *) cexpr);
+  visit((BinOpExpr *)cexpr);
 }
 
-void AST2TAC::visit(UnOpExpr *uexpr) 
+void AST2TAC::visit(UnOpExpr *uexpr)
 {
   TACUnOpExpr *tac = new TACUnOpExpr(uexpr->getOp(), uexpr->getExpr()->getVar());
   TACVariable *tmp = getTemp();
   uexpr->setVar(tmp);
   TACAssign *assgn = new TACAssign(tmp, tac);
+  uexpr->tacNodes = uexpr->getExpr()->tacNodes;
+  uexpr->tacNodes.push_back(assgn);
   addCode(assgn);
 }
 
-void AST2TAC::visit(Variable *var) 
+void AST2TAC::visit(Variable *var)
 {
   var->setVar(new TACVariable(var->getName()));
 }
@@ -86,16 +132,20 @@ void AST2TAC::visit(Number *num)
   TACVariable *tmp = getTemp();
   num->setVar(tmp);
   TACAssign *assgn = new TACAssign(tmp, toAtomic(num));
+  num->tacNodes.push_back(assgn);
   addCode(assgn);
 }
 
-void AST2TAC::visit(Boolean *boolean) 
+void AST2TAC::visit(Boolean *boolean)
 {
   TACVariable *tmp = getTemp();
   boolean->setVar(tmp);
   TACAssign *assgn = new TACAssign(tmp, toAtomic(boolean));
+  boolean->tacNodes.push_back(assgn);
   addCode(assgn);
 }
+
+
 
 TACAtom *AST2TAC::getAtomic(Expr *expr)
 {
@@ -124,9 +174,20 @@ TACVariable *AST2TAC::getTemp()
 
 void AST2TAC::addCode(TACNode *node)
 {
-  // if (this->code.size() > 0)
-  // {
-  //   this->code.back();
-  // }
   this->code.push_back(node);
+}
+
+void AST2TAC::addEdge(TACNode *from, TACNode *to)
+{
+  to->addPred(from);
+  from->addSucc(to);
+}
+
+void AST2TAC::addEdge(std::vector<TACNode *> *nodes, TACNode *to)
+{
+  size_t size = nodes->size();
+  for (size_t i = 1; i < size; i++) {
+    addEdge(nodes->at(i-1), nodes->at(i));
+  }
+  addEdge(nodes->back(), to);
 }

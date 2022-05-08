@@ -1,52 +1,23 @@
 #include "TACStmts.hh"
 
-void TACNormalNode::addPred(TACNode *node)
+void TACNode::addPred(TACNode *node)
 {
   this->preds.push_back(node);
 }
 
-void TACNormalNode::setSucc(TACNode *node)
+void TACNode::addSucc(TACNode *node)
 {
-  this->succ = node;
+  this->succs.push_back(node);
 }
 
-std::vector<TACNode *> *TACNormalNode::getPreds()
+std::vector<TACNode *> *TACNode::getPreds()
 {
   return &(this->preds);
 }
 
-TACNode *TACNormalNode::getSucc()
+std::vector<TACNode *> *TACNode::getSuccs()
 {
-  return this->succ;
-}
-
-void TACStructuredBranch::addPred(TACNode *node)
-{
-  this->preds.push_back(node);
-}
-
-void TACStructuredBranch::setTrueSucc(TACNode *node)
-{
-  this->trueSucc = node;
-}
-
-void TACStructuredBranch::setFalseSucc(TACNode *node)
-{
-  this->falseSucc = node;
-}
-
-std::vector<TACNode *> *TACStructuredBranch::getPreds()
-{
-  return &(this->preds);
-}
-
-TACNode *TACStructuredBranch::getTrueSucc()
-{
-  return this->trueSucc;
-}
-TACNode *TACStructuredBranch::getFalseSucc()
-{
-  return this->falseSucc;
+  return &(this->succs);
 }
 
 std::string TACAssign::toString()

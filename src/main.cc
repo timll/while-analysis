@@ -11,6 +11,7 @@
 #include "ast/visitor/context/ContextAnalysis.hh"
 #include "ast/visitor/context/ContextError.hh"
 #include "ast/visitor/ast2tac/AST2TAC.hh"
+#include "cfg/CFG.hh"
 
 int main(int argc, char *argv[])
 {
@@ -56,11 +57,11 @@ int main(int argc, char *argv[])
   p->accept(&printer);
   printer.dumpToFile("ast.dot");
 
-  AST2TAC a2t = AST2TAC();
-  p->accept(&a2t);
-  for (TACNode *node : *a2t.getCode())
-  {
-    std::cout << node->toString() << "\n";
-  }
+  // AST2TAC a2t = AST2TAC();
+  // p->accept(&a2t);
+
+  CFG cfg = CFG(p);
+  cfg.printCode();
+  cfg.dumpToFile("cfg.dot");
   return 0;
 }

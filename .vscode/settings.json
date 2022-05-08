@@ -46,7 +46,9 @@
         "iostream": "cpp",
         "istream": "cpp",
         "set": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "strstream": "cpp",
+        "unordered_set": "cpp"
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,
