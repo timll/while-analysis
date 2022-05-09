@@ -26,7 +26,7 @@ public:
   Stmt() {}
   virtual void accept(ASTVisitor *v) = 0;
   TACNode *front;
-  TACNode *back;
+  std::vector<TACNode *> back;
 
 private:
 };

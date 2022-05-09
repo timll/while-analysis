@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
   // p->accept(&a2t);
 
   CFG cfg = CFG(p);
-  cfg.printCode();
+  // cfg.printCode();
   cfg.dumpToFile("cfg.dot");
   return 0;
 }

@@ -3,21 +3,25 @@
 #include "AST2TAC.hh"
 #include "./../../ASTNodes.hh"
 
-void AST2TAC::visit(Program *program) 
-{  
+void AST2TAC::visit(Program *program)
+{
   auto stmts = program->getStmts();
   size_t size = stmts->size();
-  for (size_t i = 1; i < size; i++) {
-    addEdge(stmts->at(i-1)->back, stmts->at(i)->front);
+  for (size_t i = 1; i < size; i++)
+  {
+    for (TACNode *back : stmts->at(i - 1)->back)
+      addEdge(back, stmts->at(i)->front);
   }
 }
 
-void AST2TAC::visit(CompoundStmt *cstmt) 
+void AST2TAC::visit(CompoundStmt *cstmt)
 {
   auto stmts = cstmt->getStmts();
   size_t size = stmts->size();
-  for (size_t i = 1; i < size; i++) {
-    addEdge(stmts->at(i-1)->back, stmts->at(i)->front);
+  for (size_t i = 1; i < size; i++)
+  {
+    for (TACNode *back : stmts->at(i - 1)->back)
+      addEdge(back, stmts->at(i)->front);
   }
 }
 
@@ -32,7 +36,7 @@ void AST2TAC::visit(DeclarationStmt *decl)
     decl->front = tac;
   else
     decl->front = decl->getRhs()->tacNodes.front();
-  decl->back = tac;
+  decl->back.push_back(tac);
   addEdge(&decl->getRhs()->tacNodes, tac);
 }
 
@@ -45,7 +49,7 @@ void AST2TAC::visit(AssignStmt *assign)
     assign->front = tac;
   else
     assign->front = assign->getRhs()->tacNodes.front();
-  assign->back = tac;
+  assign->back.push_back(tac);
   addEdge(&assign->getRhs()->tacNodes, tac);
 }
 
@@ -54,7 +58,7 @@ void AST2TAC::visit(SkipStmt *skip)
   TACSkip *tac = new TACSkip();
   addCode(tac);
   skip->front = tac;
-  skip->back = tac;
+  skip->back.push_back(tac);
 }
 
 void AST2TAC::visit(IfStmt *ifstmt)
@@ -63,13 +67,22 @@ void AST2TAC::visit(IfStmt *ifstmt)
   addCode(tac);
   addEdge(&ifstmt->getCondition()->tacNodes, tac);
   addEdge(tac, ifstmt->getTrueBody()->getStmts()->front()->front);
-  if (ifstmt->hasElse())
-    addEdge(tac, ifstmt->getElseBody()->getStmts()->front()->front);
   if (ifstmt->getCondition()->tacNodes.size() == 0)
     ifstmt->front = tac;
   else
     ifstmt->front = ifstmt->getCondition()->tacNodes.front();
-  ifstmt->back = tac;
+  for (TACNode *back : ifstmt->getTrueBody()->getStmts()->back()->back)
+    ifstmt->back.push_back(back);
+  if (ifstmt->hasElse())
+  {
+    addEdge(tac, ifstmt->getElseBody()->getStmts()->front()->front);
+    for (TACNode *back : ifstmt->getElseBody()->getStmts()->back()->back)
+      ifstmt->back.push_back(back);
+  }
+  else
+  {
+    ifstmt->back.push_back(tac);
+  }
 }
 
 void AST2TAC::visit(WhileStmt *whilestmt)
@@ -78,12 +91,13 @@ void AST2TAC::visit(WhileStmt *whilestmt)
   addCode(tac);
   addEdge(&whilestmt->getCondition()->tacNodes, tac);
   addEdge(tac, whilestmt->getBody()->getStmts()->front()->front);
-  addEdge(whilestmt->getBody()->getStmts()->back()->back, tac);
+  for (TACNode *back : whilestmt->getBody()->getStmts()->back()->back)
+    addEdge(back, tac);
   if (whilestmt->getCondition()->tacNodes.size() == 0)
     whilestmt->front = tac;
   else
     whilestmt->front = whilestmt->getCondition()->tacNodes.front();
-  whilestmt->back = tac;
+  whilestmt->back.push_back(tac);
 }
 
 void AST2TAC::visit(Expr *expr) {}
@@ -145,8 +159,6 @@ void AST2TAC::visit(Boolean *boolean)
   addCode(assgn);
 }
 
-
-
 TACAtom *AST2TAC::getAtomic(Expr *expr)
 {
   // if (expr->isAtomic())
@@ -186,8 +198,9 @@ void AST2TAC::addEdge(TACNode *from, TACNode *to)
 void AST2TAC::addEdge(std::vector<TACNode *> *nodes, TACNode *to)
 {
   size_t size = nodes->size();
-  for (size_t i = 1; i < size; i++) {
-    addEdge(nodes->at(i-1), nodes->at(i));
+  for (size_t i = 1; i < size; i++)
+  {
+    addEdge(nodes->at(i - 1), nodes->at(i));
   }
   addEdge(nodes->back(), to);
 }
